@@ -1,3 +1,4 @@
+#include "variant.h"
 /**
    @file lora_handler.cpp
    @author Bernd Giesecke (bernd.giesecke@rakwireless.com)
@@ -29,6 +30,7 @@ int liquidPin = WB_A0; // Analog Pin for Liquid Sensor
 float liquidRead;
 float dataVoltage;
 float depth;
+int newVcc= WB_IO2;
 
 /** Lora application data buffer. */
 static uint8_t m_lora_app_data_buffer[LORAWAN_APP_DATA_BUFF_SIZE];
@@ -89,6 +91,7 @@ static void initSensors()
 
   // initialize digital pin LED_BUILTIN as an output.
   pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(newVcc, OUTPUT);
 
   // initialize Temperature, pressure sensor (BMP280)
   if (!bmp.begin())
@@ -301,7 +304,7 @@ bool sendLoRaFrame(void)
   //******************************************************************
 
   uint8_t buffSize = 0;
-
+  digitalWrite(newVcc,HIGH);
   // Calculate Liquid Sensor : convert Voltage to meters
   liquidRead = analogRead(liquidPin) * (3300 / 1023); //  3.3V/Pin resolution
   dataVoltage = liquidRead - 250;                     // difference between values - 3.3v (m, analog out) -> 0m - 159 -> 1m - 455 -> 2m - 767
@@ -316,6 +319,6 @@ bool sendLoRaFrame(void)
   m_lora_app_data.buffsize = buffSize;
 
   lmh_error_status error = lmh_send(&m_lora_app_data, LMH_UNCONFIRMED_MSG);
-
+  digitalWrite(newVcc,LOW);
   return (error == 0);
 }
