@@ -131,6 +131,7 @@ The figure below shows the architecture implementation and the prototype.
 
 The figure below shows the circuit diagram for the prototype, we used the analog pin (AIN1) and (SCL) (SDA) (VDD)(GND) pins as it is referred to in the figure below.
 
+NOTE: The red wire (3.3V) of the water level sensor is not connected to VCC, instead to pin `WB_IO2`. The reason for this is to control the power consumption of the sensor, e.g. turn `WB_IO2` to LOW (0V) prior to going to deep sleep and turn it to HIGH prior to sampling. 
 
  ![](https://i.imgur.com/gRFGjcP.png)
 
