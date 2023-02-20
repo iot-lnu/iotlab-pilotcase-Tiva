@@ -4,6 +4,7 @@ Written by: Mustafa Omareen, February 10, 2023
 The purpose of the article is to present a solution for water and environmental monitoring using the RAK5005-O WisBlock Base, the RAK4630 WisDuo LPWAN module, the Seeed Sensor for Liquid Level Monitoring, and the BMP280 Temperature and Barometric Pressure Sensor. The article provides an overview of the hardware used and the implementation of the solution, including circuit diagrams and power profiling data. 
 
 - [Tiva](#tiva)
+- [Bill of Material](#bill-of-material)
 - [Run Example](#run-example)
 - [Background](#background)
 - [Objective](#objective)
@@ -18,9 +19,19 @@ The purpose of the article is to present a solution for water and environmental 
 - [Implementation](#implementation)
 - [Power Profiling](#power-profiling)
 
+# Bill of Material
+
+- [WisBlock Base Board RAK5005-O](https://store.rakwireless.com/products/rak5005-o-base-board?variant=35614952816798)
+- [RAK4630 nRF52840 SX1262, LoRa Bluetooth Module for LoRaWAN](https://store.rakwireless.com/products/rak4630-wisduo-lpwan-module?variant=41650213912774)
+- [Liquid Level Sensor for Water Level, Oil Level and Mild-corrosive Liquid Level Monitoring](https://www.seeedstudio.com/Liquid-Level-Sensor-p-4619.html)
+- [Environment Sensor BOSCH BME680](https://store.rakwireless.com/products/rak1906-bme680-environment-sensor)
+- [RAKBox-B2 Enclosure with solar panel](https://store.rakwireless.com/products/rakbox-b2-enclosure-with-solar-panel?variant=39806212047046)
+- [Batteri LiPo 3.7V](https://www.electrokit.com/produkt/batteri-lipo-3-7v-1500mah/?gclid=Cj0KCQiAorKfBhC0ARIsAHDzsltIdl01G_LkQJymJZDbWce14WcXJDR_TZrbKWOkfgZBJUKmn6gBCXEaAhd-EALw_wcB)
+
+
 # Run Example
 
-To run this example, install Visual Studio Code and the PlatformIO extension. Then, follow [this guide](https://docs.helium.com/use-the-network/devices/development/rakwireless/wisblock-4631/platformio/) to add the `nordicnrf52` platform and related boards to your platformio. Once that is done, clone this project and change the `upload_port` to the port your device is connected to. Once done, the project can be built and uploaded to the device.
+To run this example, install Visual Studio Code and the PlatformIO extension. Then, follow [this guide](https://docs.helium.com/use-the-network/devices/development/rakwireless/wisblock-4631/platformio/) to add the `nordicnrf52` platform and related boards to your platformio. Once that is done, clone this project and change the `upload_port` to the port your device is connected to. 
 
 ```c
 [env:wiscore_rak4631]
@@ -32,6 +43,25 @@ lib_deps =
 	adafruit/Adafruit BMP280 Library@^2.6.6
 	beegee-tokyo/SX126x-Arduino@^2.0.15
 ```
+
+Next, the LoRaWAN keys needs to be changed in `LoRaWAN.cpp`, at lines `70`, `72`, and `74`. 
+
+```c
+//  !!!! KEYS ARE MSB !!!!
+/** Device EUI required for OTAA network join */
+uint8_t nodeDeviceEUI[8] = {0x70, 0xB3, 0xD5, 0x7E, 0xD0, 0x05, 0x9B, 0x6F};
+/** Application EUI required for network join */
+uint8_t nodeAppEUI[8] = {0x70, 0xB3, 0xD5, 0x7E, 0xD0, 0x05, 0x9B, 0x66};
+/** Application key required for network join */
+uint8_t nodeAppKey[16] = {0x12, 0x0C, 0x05, 0xFC, 0x88, 0xEC, 0x6D, 0xB0, 0x9E, 0x4F, 0x5E, 0x49, 0xBB, 0xDF, 0x3D, 0x4A};
+```
+
+To get these keys, create a new device on The Things Tetwork or Helium. These keys can be randomly generated and will be visible during device creation and on the device page.
+
+![](https://i.imgur.com/3E63sck.png)
+
+
+Once done, the project can be built and uploaded. The device should soon appear to be joining in the TTN/Helium console. In TTN, they are available under `Activation information`.  
 
 # Background
 

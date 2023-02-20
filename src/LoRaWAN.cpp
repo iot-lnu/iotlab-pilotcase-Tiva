@@ -119,7 +119,6 @@ static void initSensors()
 */
 int8_t initLoRaWan(void)
 {
-
   initSensors();
 
   // Initialize LoRa chip.
@@ -228,14 +227,12 @@ static void lorawan_rx_handler(lmh_app_data_t *app_data)
         Serial.println("Request to switch to class A");
 #endif
         break;
-
       case 1:
         lmh_class_request(CLASS_B);
 #ifndef MAX_SAVE
         Serial.println("Request to switch to class B");
 #endif
         break;
-
       case 2:
         lmh_class_request(CLASS_C);
 #ifndef MAX_SAVE
@@ -305,16 +302,23 @@ bool sendLoRaFrame(void)
 
   uint8_t buffSize = 0;
   digitalWrite(newVcc, HIGH);
+
   // Calculate Liquid Sensor : convert Voltage to meters
   liquidRead = analogRead(liquidPin) * (3300 / 1023); //  3.3V/Pin resolution
   dataVoltage = liquidRead - 250;                     // difference between values - 3.3v (m, analog out) -> 0m - 159 -> 1m - 455 -> 2m - 767
+
+  // The following formula is used to calculate the depth when the sensor is supplied with 5V
+  // To-Do: Change the formula to calculate the depth when the sensor is supplied with 3.3V
   depth = ((dataVoltage / 1000) - 0.5) / 0.8;
 
+  // We store our values in the data buffer and increment the buffer size each time we store a value
   m_lora_app_data_buffer[buffSize++] = bmp.readTemperature();
-  m_lora_app_data_buffer[buffSize++] = int(bmp.readPressure()) - 900;
+  m_lora_app_data_buffer[buffSize++] = int(bmp.readPressure() / 100) - 900;
   m_lora_app_data_buffer[buffSize++] = depth;
 
   Serial.println(bmp.readPressure());
+
+  Serial.println(depth);
 
   m_lora_app_data.buffsize = buffSize;
 
